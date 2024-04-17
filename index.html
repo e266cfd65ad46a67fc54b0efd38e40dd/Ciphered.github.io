@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <style>
+   body { background-color: #5D3FD3; display: flex; justify-content:          center; align-items: center; height: 100vh; margin: 0; } label, input,      button, textarea, select { display: block; margin-bottom: 10px; border:    2px solid #000; padding: 10px; width: 200px; border-radius: 7px;            outline: none; background: #5D3FD3; color: #fff; }                          input[type="text"]:focus, input[type="password"]:focus, button:focus,      textarea:focus, select:focus { border-color: #7dc9e2; color: #fff; }        #message { color: #fff; display: none; margin-top: 20px; padding: 20px;    border: 2px solid #000; border-radius: 7px; background: #5D3FD3; color:    #fff; position: fixed; top: 50%; left: 50%; transform: translate(-50%,      -50%); }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="form">
+    <input type="text" id="username" name="username">
+    <input type="password" id="password" name="password">
+    <button onclick="checkLogin()">Login</button>
+  </div>
+
+  <div id="message">
+    <textarea id="textInput" style="border: 2px solid #fff; border-radius: 7px; margin-bottom: 10px;"></textarea>
+    <select id="encoding">
+      <option value="ascii">ASCII</option>
+      <option value="hex">Hex</option>
+      <option value="z85">Z85</option>
+      <option value="xx">XX</option>
+    </select>
+    <label id="encodingLabel" for="textInput">ASCII Encoding:</label>
+    <button onclick="encodeText()">Encode</button>
+    <input type="number" id="encodeCount" placeholder="Encode Count" style="border: 2px solid #fff; border-radius: 7px; margin-bottom: 10px;">
+  </div>
+
+  <script>
+    function checkLogin() {
+      var username = document.getElementById('username').value;
+      var password = document.getElementById('password').value;
+      if (username === 'polar' && password === 'root') {
+        document.body.style.backgroundColor = '#5D3FD3';
+        var message = document.getElementById('message');
+        message.style.display = 'block';
+        var form = document.querySelector('.form');
+        form.style.display = 'none';
+      }
+    }
+
+    function asciiEncode(inputText) {
+      var encodedText = '';
+      for (var i = 0; i < inputText.length; i++) {
+        encodedText += inputText.charCodeAt(i) + '/';
+      }
+      return encodedText.slice(0, -1);
+    }
+
+    function hexEncode(inputText) {
+      var encodedText = '';
+      for (var i = 0; i < inputText.length; i++) {
+        encodedText += inputText.charCodeAt(i).toString(16) + ' ';
+      }
+      return encodedText.trim();
+    }
+    
+    function xxEncode(inputText) {
+      var encodedText = '';
+      for (var i = 0; i < inputText.length; i++) {
+        var charCode = inputText.charCodeAt(i).toString(16).toUpperCase();
+        encodedText += String.fromCharCode(parseInt(charCode, 16) + 17);
+      }
+      return encodedText;
+    }
+
+    const z85Chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#';
+
+    function encode4Bytes(bytes) {
+      let value = bytes[0];
+      value = (value << 8) + bytes[1];
+      value = (value << 8) + bytes[2];
+      value = (value << 8) + bytes[3];
+
+      let output = '';
+      for (let i = 0; i < 5; i++) {
+        output += z85Chars[value & 0x1F];
+        value = value >> 5;
+      }
+      return output;
+    }
+
+    function encodeZ85(input) {
+      let output = '';
+
+      input += String.fromCharCode(0x00, 0x00, 0x00);
+
+      for (let i = 0; i < input.length; i += 4) {
+        let bytes = [];
+        for (let j = 0; j < 4; j++) {
+          bytes.push(input.charCodeAt(i + j));
+        }
+        output += encode4Bytes(bytes);
+      }
+
+      document.getElementById('textInput').value = output;
+    }
+
+  function encodeText() {
+    var inputText = document.getElementById('textInput').value;
+    var selectedEncoding = document.getElementById('encoding').value;
+    var encodeCount = document.getElementById('encodeCount').value;
+
+    if (inputText === '') {
+      alert('Please enter text.');
+    } else {
+      var encodedText = inputText;
+      if (selectedEncoding === 'ascii') {
+        for (let i = 0; i < encodeCount; i++) {
+          encodedText = asciiEncode(encodedText);
+        }
+      } else if (selectedEncoding === 'hex') {
+        for (let i = 0; i < encodeCount; i++) {
+          encodedText = hexEncode(encodedText);
+        }
+      } else if (selectedEncoding === 'z85') {
+        for (let i = 0; i < encodeCount; i++) {
+          encodeZ85(encodedText);
+          encodedText = document.getElementById('textInput').value;
+        }
+      } else if (selectedEncoding === 'xx') {
+        for (let i = 0; i < encodeCount; i++) {
+          encodedText = xxEncode(encodedText);
+        }
+      }
+
+      document.getElementById('textInput').value = encodedText;
+    }
+  }
+
+
+  var encodingSelect = document.getElementById('encoding');
+
+  encodingSelect.onchange = function() {
+    var selectedEncoding = encodingSelect.value;
+    var label = document.getElementById('encodingLabel');
+
+    if(selectedEncoding === 'ascii') {
+      label.innerText = 'ASCII Encoding';
+    } else if(selectedEncoding === 'hex') {
+      label.innerText = 'Hex Encoding'; 
+    } else if(selectedEncoding === 'z85') {
+      label.innerText = 'Z85 Encoding';
+    } else if(selectedEncoding === 'xx') {
+      label.innerText = 'XX Encoding';
+    }
+  }
+  </script>
+
+</body>
+
+</html>
+
