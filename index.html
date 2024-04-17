@@ -3,11 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-
-  <style>
-    <link rel="stylesheet" type="text/css" href="style.css">
-  </style>
-
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
@@ -18,7 +14,7 @@
     <button onclick="checkLogin()">Login</button>
   </div>
 
-  <div id="message">
+  <div id="message" style="display:none;">
     <textarea id="textInput" style="border: 2px solid #fff; border-radius: 7px; margin-bottom: 10px;"></textarea>
     <select id="encoding">
       <option value="ascii">ASCII</option>
@@ -98,61 +94,59 @@
         output += encode4Bytes(bytes);
       }
 
-      document.getElementById('textInput').value = output;
+      return output;
     }
 
-  function encodeText() {
-    var inputText = document.getElementById('textInput').value;
-    var selectedEncoding = document.getElementById('encoding').value;
-    var encodeCount = document.getElementById('encodeCount').value;
+    function encodeText() {
+      var inputText = document.getElementById('textInput').value;
+      var selectedEncoding = document.getElementById('encoding').value;
+      var encodeCount = document.getElementById('encodeCount').value;
 
-    if (inputText === '') {
-      alert('Please enter text.');
-    } else {
-      var encodedText = inputText;
-      if (selectedEncoding === 'ascii') {
-        for (let i = 0; i < encodeCount; i++) {
-          encodedText = asciiEncode(encodedText);
+      if (inputText === '') {
+        alert('Please enter text.');
+      } else {
+        var encodedText = inputText;
+        if (selectedEncoding === 'ascii') {
+          for (let i = 0; i < encodeCount; i++) {
+            encodedText = asciiEncode(encodedText);
+          }
+        } else if (selectedEncoding === 'hex') {
+          for (let i = 0; i < encodeCount; i++) {
+            encodedText = hexEncode(encodedText);
+          }
+        } else if (selectedEncoding === 'z85') {
+          for (let i = 0; i < encodeCount; i++) {
+            encodedText = encodeZ85(encodedText);
+          }
+        } else if (selectedEncoding === 'xx') {
+          for (let i = 0; i < encodeCount; i++) {
+            encodedText = xxEncode(encodedText);
+          }
         }
-      } else if (selectedEncoding === 'hex') {
-        for (let i = 0; i < encodeCount; i++) {
-          encodedText = hexEncode(encodedText);
-        }
-      } else if (selectedEncoding === 'z85') {
-        for (let i = 0; i < encodeCount; i++) {
-          encodeZ85(encodedText);
-          encodedText = document.getElementById('textInput').value;
-        }
-      } else if (selectedEncoding === 'xx') {
-        for (let i = 0; i < encodeCount; i++) {
-          encodedText = xxEncode(encodedText);
-        }
+
+        document.getElementById('textInput').value = encodedText;
       }
-
-      document.getElementById('textInput').value = encodedText;
     }
-  }
 
 
-  var encodingSelect = document.getElementById('encoding');
+    var encodingSelect = document.getElementById('encoding');
 
-  encodingSelect.onchange = function() {
-    var selectedEncoding = encodingSelect.value;
-    var label = document.getElementById('encodingLabel');
+    encodingSelect.onchange = function() {
+      var selectedEncoding = encodingSelect.value;
+      var label = document.getElementById('encodingLabel');
 
-    if(selectedEncoding === 'ascii') {
-      label.innerText = 'ASCII Encoding';
-    } else if(selectedEncoding === 'hex') {
-      label.innerText = 'Hex Encoding'; 
-    } else if(selectedEncoding === 'z85') {
-      label.innerText = 'Z85 Encoding';
-    } else if(selectedEncoding === 'xx') {
-      label.innerText = 'XX Encoding';
+      if(selectedEncoding === 'ascii') {
+        label.innerText = 'ASCII Encoding';
+      } else if(selectedEncoding === 'hex') {
+        label.innerText = 'Hex Encoding'; 
+      } else if(selectedEncoding === 'z85') {
+        label.innerText = 'Z85 Encoding';
+      } else if(selectedEncoding === 'xx') {
+        label.innerText = 'XX Encoding';
+      }
     }
-  }
   </script>
 
 </body>
 
 </html>
-
