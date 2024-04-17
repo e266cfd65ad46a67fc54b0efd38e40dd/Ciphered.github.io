@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
-
 <body>
-
   <div class="form">
     <input type="text" id="username" name="username">
     <input type="password" id="password" name="password">
@@ -21,10 +18,13 @@
       <option value="hex">Hex</option>
       <option value="z85">Z85</option>
       <option value="xx">XX</option>
+      <option value="morse">Morse Code</option>
+      <option value="binary">Binary</option>
+      <option value="eliasgamma">Elias Gamma</option>
     </select>
     <label id="encodingLabel" for="textInput">ASCII Encoding:</label>
     <button onclick="encodeText()">Encode</button>
-    <input type="number" id="encodeCount" placeholder="Encode Count" style="border: 2px solid #fff; border-radius: 7px; margin-bottom: 10px;">
+    <input type="number" id="encodeCount" placeholder="Encode Count" style="border: 2px solid #fff; border-radius: 7px; margin-bottom: 10px;" value="1">
   </div>
 
   <script>
@@ -55,7 +55,7 @@
       }
       return encodedText.trim();
     }
-    
+
     function xxEncode(inputText) {
       var encodedText = '';
       for (var i = 0; i < inputText.length; i++) {
@@ -97,10 +97,32 @@
       return output;
     }
 
+    function morseEncode(inputText) {
+      const morseCode = {
+        'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--',
+        'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..',
+        '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
+        ',': '--..--', '.': '.-.-.-', '?': '..--..', ' ': '/'
+      };
+
+      return inputText.toUpperCase().split('').map(char => morseCode[char] || '').join(' ');
+    }
+
+    function binaryEncode(inputText) {
+      return inputText.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+    }
+
+    function eliasGammaEncode(inputNumber) {
+      const binaryString = (inputNumber >>> 0).toString(2);
+      const unaryLength = binaryString.length - 1;
+
+      return '0'.repeat(unaryLength) + binaryString;
+    }
+
     function encodeText() {
       var inputText = document.getElementById('textInput').value;
       var selectedEncoding = document.getElementById('encoding').value;
-      var encodeCount = document.getElementById('encodeCount').value;
+      var encodeCount = document.getElementById('encodeCount').value || 1;
 
       if (inputText === '') {
         alert('Please enter text.');
@@ -122,12 +144,17 @@
           for (let i = 0; i < encodeCount; i++) {
             encodedText = xxEncode(encodedText);
           }
+        } else if (selectedEncoding === 'morse') {
+          encodedText = morseEncode(encodedText);
+        } else if (selectedEncoding === 'binary') {
+          encodedText = binaryEncode(encodedText);
+        } else if (selectedEncoding === 'eliasgamma') {
+          encodedText = eliasGammaEncode(parseInt(inputText));
         }
 
         document.getElementById('textInput').value = encodedText;
       }
     }
-
 
     var encodingSelect = document.getElementById('encoding');
 
@@ -143,10 +170,14 @@
         label.innerText = 'Z85 Encoding';
       } else if(selectedEncoding === 'xx') {
         label.innerText = 'XX Encoding';
+      } else if(selectedEncoding === 'morse') {
+        label.innerText = 'Morse Code';
+      } else if(selectedEncoding === 'binary') {
+        label.innerText = 'Binary Encoding';
+      } else if(selectedEncoding === 'eliasgamma') {
+        label.innerText = 'Elias Gamma Encoding';
       }
     }
   </script>
-
 </body>
-
 </html>
